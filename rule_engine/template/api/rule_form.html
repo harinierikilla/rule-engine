@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f3e5ab, #f9c8c8, #f1c4d0, #c8e2f2);
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a4a4a;
+        }
+
+        h2 {
+            color: #5b5b5b;
+            border-bottom: 2px solid #4a4a4a;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4a90e2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #357ABD;
+        }
+
+        #evaluateRuleResponse,
+        #combineRulesResponse,
+        #createRuleResponse {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rule Engine</h1>
+
+    <!-- Create Rule Section -->
+    <h2>Create a Rule</h2>
+    <form id="createRuleForm">
+        <label for="ruleString">Rule String:</label>
+        <input type="text" id="ruleString" name="ruleString" required>
+        <button type="submit">Create Rule</button>
+    </form>
+    <div id="createRuleResponse"></div>
+
+    <!-- Combine Rules Section -->
+    <h2>Combine Rules</h2>
+    <form id="combineRulesForm">
+        <label for="combinedRules">Combined Rule Strings (comma separated):</label>
+        <input type="text" id="combinedRules" name="combinedRules" required>
+        <button type="submit">Combine Rules</button>
+    </form>
+    <div id="combineRulesResponse"></div>
+
+    <!-- Evaluate Rule Section -->
+    <h2>Evaluate Rule</h2>
+    <form id="evaluateRuleForm">
+        <label for="evaluationData">Evaluation Data (JSON):</label>
+        <textarea id="evaluationData" name="evaluationData" required></textarea>
+        <button type="submit">Evaluate Rule</button>
+    </form>
+    <div id="evaluateRuleResponse"></div>
+
+    <script>
+        // Create Rule
+        document.getElementById('createRuleForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const ruleString = document.getElementById('ruleString').value;
+
+            const response = await fetch('/api/create_rule/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rule_string: ruleString }),
+            });
+
+            const data = await response.json();
+            document.getElementById('createRuleResponse').innerText = JSON.stringify(data);
+        };
+
+        // Combine Rules
+        document.getElementById('combineRulesForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const combinedRules = document.getElementById('combinedRules').value.split(',');
+
+            const response = await fetch('/api/combine_rules/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rules: combinedRules }),
+            });
+
+            const data = await response.json();
+            document.getElementById('combineRulesResponse').innerText = JSON.stringify(data);
+        };
+
+        // Evaluate Rule
+        document.getElementById('evaluateRuleForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const evaluationData = document.getElementById('evaluationData').value;
+
+            const response = await fetch('/api/evaluate_rule/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: evaluationData, // Assuming this is already a JSON string
+            });
+
+            const data = await response.json();
+            document.getElementById('evaluateRuleResponse').innerText = JSON.stringify(data);
+        };
+    </script>
+</body>
+</html>
+
